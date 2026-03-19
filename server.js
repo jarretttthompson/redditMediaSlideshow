@@ -8,7 +8,37 @@ const cache = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 app.use(express.static(path.join(__dirname, 'public')));
+/** Collage bundle linked from the site’s Projects page — same origin as /api/lookup */
+app.use(
+  '/projects/reddit-media-collage',
+  express.static(path.join(__dirname, 'website', 'projects', 'reddit-media-collage'))
+);
 app.use(express.json());
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type, ngrok-skip-browser-warning'
+  );
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
+function normalizeRedditImageUrl(url) {
+  if (!url || typeof url !== 'string') return url;
+  try {
+    const u = new URL(url);
+    if (u.hostname === 'preview.redd.it') {
+      return `https://i.redd.it${u.pathname}`;
+    }
+    return url;
+  } catch {
+    return url;
+  }
+}
 
 function extractUsername(input) {
   input = input.trim();
@@ -21,6 +51,45 @@ function extractUsername(input) {
   // Assume it's just a username
   if (/^[A-Za-z0-9_-]+$/.test(input)) return input;
   return null;
+}
+
+function absolutizeUrl(u) {
+  if (!u || typeof u !== 'string') return u;
+  const t = u.trim();
+  if (!t) return '';
+  if (t.startsWith('//')) return `https:${t}`;
+  return t;
+}
+
+function pickProfileImageUrlFromAboutData(d) {
+  if (!d) return null;
+  const candidates = [
+    d.snoovatar_img,
+    d.icon_img,
+    d.subreddit && d.subreddit.icon_img,
+  ];
+  for (const c of candidates) {
+    const s = c != null ? String(c).trim() : '';
+    if (!s) continue;
+    const decoded = s.replace(/&amp;/g, '&');
+    const abs = absolutizeUrl(decoded);
+    if (abs) return normalizeRedditImageUrl(abs) || abs;
+  }
+  return null;
+}
+
+async function fetchUserProfileImageUrl(username) {
+  try {
+    const url = `https://www.reddit.com/user/${encodeURIComponent(username)}/about.json?raw_json=1`;
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'RedditSlideshow/1.0' },
+    });
+    if (!response.ok) return null;
+    const json = await response.json();
+    return pickProfileImageUrlFromAboutData(json?.data);
+  } catch {
+    return null;
+  }
 }
 
 function extractMediaFromPost(post) {
@@ -92,11 +161,13 @@ function extractMediaFromPost(post) {
 }
 
 async function fetchUserMedia(username, limit = 500) {
-  const cacheKey = username.toLowerCase();
+  const cacheKey = `${username.toLowerCase()}:v2`;
   const cached = cache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     return cached.data;
   }
+
+  const profileImageUrlPromise = fetchUserProfileImageUrl(username);
 
   const allMedia = [];
   let after = null;
@@ -136,7 +207,20 @@ async function fetchUserMedia(username, limit = 500) {
     await new Promise((r) => setTimeout(r, 1200));
   }
 
-  const result = { username, count: allMedia.length, media: allMedia };
+  for (const m of allMedia) {
+    if (m && m.type === 'image' && m.url) {
+      m.url = normalizeRedditImageUrl(m.url);
+    }
+  }
+
+  const profileImageUrl = await profileImageUrlPromise;
+
+  const result = {
+    username,
+    count: allMedia.length,
+    media: allMedia,
+    profileImageUrl: profileImageUrl || null,
+  };
   cache.set(cacheKey, { data: result, timestamp: Date.now() });
   return result;
 }
@@ -166,6 +250,36 @@ app.get('/api/lookup', async (req, res) => {
   } catch (err) {
     const status = err.message.includes('not found') ? 404 : err.message.includes('private') ? 403 : 500;
     res.status(status).json({ error: err.message });
+  }
+});
+
+/**
+ * Same-origin avatar for the browser (avoids hotlink / referrer issues with styles.redditmedia.com).
+ */
+app.get('/api/avatar/:user', async (req, res) => {
+  try {
+    const username = extractUsername(req.params.user);
+    if (!username) {
+      return res.status(400).json({ error: 'Invalid username' });
+    }
+    const imageUrl = await fetchUserProfileImageUrl(username);
+    if (!imageUrl) {
+      return res.status(404).json({ error: 'No profile image' });
+    }
+    const imgRes = await fetch(imageUrl, {
+      headers: { 'User-Agent': 'RedditSlideshow/1.0', Accept: 'image/*' },
+    });
+    if (!imgRes.ok) {
+      return res.status(502).json({ error: 'Upstream image error' });
+    }
+    const ct = imgRes.headers.get('content-type') || 'image/jpeg';
+    res.setHeader('Content-Type', ct);
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    const buf = Buffer.from(await imgRes.arrayBuffer());
+    res.send(buf);
+  } catch (err) {
+    res.status(500).json({ error: err.message || 'Avatar proxy failed' });
   }
 });
 

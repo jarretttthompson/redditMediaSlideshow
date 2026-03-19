@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>photo album</title>
+  <link rel="preload" href="fonts/VulfMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/VulfSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css?v=20250317" />
+  <link rel="stylesheet" href="photo-album.css" />
+  <script type="module" src="js/main.js?v=20250327"></script>
+</head>
+<body data-page="photo-album" class="photo-album-page">
+  <header class="text-box header-box glow-pulse">
+     <h1>photo album</h1>
+  </header>
+
+  <nav class="nav-boxes" aria-label="Main navigation">
+    <div class="nav-box box-left glow-pulse">
+      <ul class="nav-list">
+        <li><a href="index.html">home</a></li>
+        <li><a href="page2.html">resume/cv</a></li>
+        <li><a href="page5.html">compositions</a></li>
+        <li><a href="friends.html">friends</a></li>
+      </ul>
+    </div>
+    <div class="nav-box box-right glow-pulse">
+      <ul class="nav-list">
+        <li><a href="photo-album.html" aria-current="page">photo album</a></li>
+        <li><a href="music.html">music</a></li>
+        <li><a href="page3.html">artwork</a></li>
+        <li><a href="page4.html">projects</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="album-main">
+    <section class="album-wall glow-pulse" aria-label="Photo album wall">
+      <p class="album-intro">
+        This page is like that one wall in your nana's house that's got all the pictures of you and your
+        siblings/cousins except I don't have any kids or grandkids and it's just random pictures that I took
+        of my loved ones, my many animals, some trash on the ground, etc.
+      </p>
+      <div class="album-grid" id="photoGallery" aria-live="polite">
+        <p class="photo-gallery__loading">Loading photos...</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
+

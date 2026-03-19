@@ -1,4 +1,8 @@
-# Develop branch + preview (without touching production)
+# Develop branch + preview (optional)
+
+**Prefer tagging + revert?** See **`VERSIONING.md`** — tag releases on `main` and `git revert` if a deploy looks bad (no long-lived `develop` required).
+
+---
 
 Use a **`develop`** branch for work in progress. Keep **GitHub Pages** building only from **`main`** so the live site stays stable.
 

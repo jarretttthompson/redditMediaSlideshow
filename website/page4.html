@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>projects</title>
+  <link rel="preload" href="fonts/VulfMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/VulfSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css?v=20250317" />
+  <script type="module" src="js/main.js?v=20250327"></script>
+</head>
+<body data-page="page4">
+  <header class="text-box header-box glow-pulse">
+     <h1>projects</h1>
+  </header>
+
+  <nav class="nav-boxes" aria-label="Main navigation">
+    <div class="nav-box box-left glow-pulse">
+      <ul class="nav-list">
+        <li><a href="index.html">home</a></li>
+        <li><a href="page2.html">resume/cv</a></li>
+        <li><a href="page5.html">compositions</a></li>
+        <li><a href="friends.html">friends</a></li>
+      </ul>
+    </div>
+    <div class="nav-box box-right glow-pulse">
+      <ul class="nav-list">
+        <li><a href="photo-album.html">photo album</a></li>
+        <li><a href="music.html">music</a></li>
+        <li><a href="page3.html">artwork</a></li>
+        <li><a href="page4.html" aria-current="page">projects</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <div class="scroll-window glow-pulse">
+
+      <h2>breakComposer</h2>
+      <a href="breakcomposer/index.html" class="project-link" target="_blank" rel="noopener noreferrer" style="display:block;margin-bottom:1em;">
+        <img src="images/breakcomposer-screenshot.png" alt="breakComposer — drum breakbeat composition tool" style="max-width:50%;border-radius:8px;border:1px solid rgba(224,111,234,0.3);">
+      </a>
+      <p>A browser-based composition tool for creating drum beats that converts a traditional piano roll into sheet music notation. 
+        Click the image to open breakComposer in a new tab. (Mobile users should rotate their device to landscape mode for the best experience.)
+        Built with React, VexFlow, and Tone.js.</p>
+
+      <hr style="border:none;border-top:1px solid rgba(224,111,234,0.25);margin:2em 0;">
+
+      <h2>Reddit Media Collage</h2>
+      <p>
+        I originally built this as the engine behind the <strong>living photo collage on the first page of this site</strong> (the homepage pulls from a Reddit profile and layers images and video with randomized timing and overlap). The full app here is the same <strong>“version 2” collage edition</strong> I run locally when I want every control: search any user or profile URL, play/pause, min/max speed between new tiles, media size, grid view, and fullscreen.
+      </p>
+      <p>
+        Open it in a new tab to try the interface yourself. Because Reddit blocks anonymous browser requests, the collage needs a tiny Node/Express proxy (included in the repo) for <code>/api/lookup</code> — same setup as the homepage. From the <code>redditThing</code> repo run <code>node server.js</code>: the collage is also served at <strong><code>http://localhost:3000/projects/reddit-media-collage/index.html</code></strong> (same host as the API, so no extra config). You can use another port (e.g. <code>3001</code>) the same way. If you only host static files (e.g. GitHub Pages), set <code>window.REDDIT_SLIDESHOW_API_BASE</code> in <code>projects/reddit-media-collage/index.html</code> to your deployed API origin.
+      </p>
+      <p>
+        <a class="project-link" href="projects/reddit-media-collage/index.html" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:10px 18px;border-radius:10px;border:2px solid rgba(224,111,234,0.5);background:rgba(26,15,40,0.6);color:rgba(240,230,250,0.95);text-decoration:none;font-weight:600;">
+          Open Reddit Media Collage (new tab)
+        </a>
+        &nbsp;
+        <a href="https://github.com/jarretttthompson/redditMediaSlideshow" target="_blank" rel="noopener noreferrer" style="color:rgba(160,128,184,1);">Source on GitHub →</a>
+      </p>
+      <p style="font-size:0.9em;opacity:0.9;">
+        <strong>Try live Pages + your laptop (free):</strong> follow <a href="TRY-TUNNEL.md">TRY-TUNNEL.md</a> — tunnel <code>node server.js</code> with ngrok or cloudflared, then open the homepage or collage with <code>?reddit_proxy=…</code>.
+      </p>
+
+      <hr style="border:none;border-top:1px solid rgba(224,111,234,0.25);margin:2em 0;">
+
+      <h2>Southern Social A/V Install</h2>
+     <p>This was a large install that I planned out and carried out myself 
+      here at a club here in Statesboro called Southern Social. This was 
+      and has been the only occasion where I was given free reign to design and 
+      install an A/V system from the ground up. 
+      We easily raised and hung over a hundred feet of truss, installed 40+ lighting fixtures (both moving and static), 
+      hung and tuned 12 RCF HDL6 line array speakers, and built a booth that houses an M32R digital mixer and an Obsidian NX1 
+      lighting console. I am the full time A/V technician for this establishment, but I was also tasked with programming the lightboard
+      and soundboard in a user friendly way so that the staff can interact with the equipment without much prior knowledge. 
+      Additionally, I designed a visualizer for the TV wall up on the stage that reacts to the different frequencies of the 
+      music being played throught the sound system, and primarily utilized vintage alcohol commercials as the content.
+      The visualizer was built using Cycling 74's Max/MSP software and runs from my PC in the booth.   
+    </p>
+    <p>Below are some pictures and videos from the venue that showcase aspects of the installation and what the final 
+      product looks like. </p>
+
+    <div id="projectsGallery" class="projects-gallery" aria-live="polite">
+      <p class="projects-gallery__hint">
+        Add project folders under <code>projects/</code> and run <code>python3 generate_projects_manifest.py</code>
+        to refresh this gallery.
+      </p>
+    </div>
+    </div>
+  </main>
+</body>
+</html>

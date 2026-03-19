@@ -1,0 +1,143 @@
+/* Homepage Reddit collage — stage only (no chrome). Tune via HOME_COLLAGE_SETTINGS in index.html */
+
+.home-collage-app {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  height: clamp(320px, 48vw, 520px);
+  min-height: clamp(280px, 42vw, 480px);
+  overflow: hidden;
+  /* Neon border + flicker come from style.css (.home-collage-app + .glow-pulse) */
+  border-radius: var(--radius-lg);
+  background: #0a0a0f;
+  --bg: #0a0a0f;
+  --bg-elevated: #1c1c26;
+  --text-muted: #8888a0;
+  --accent: #ff6b35;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.home-collage-app .screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.home-collage-app .screen.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.home-collage-app .loader-container {
+  text-align: center;
+}
+
+.home-collage-app .loader {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--bg-elevated);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: hc-spin 0.8s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes hc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.home-collage-app #loading-text {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.home-collage-app #slideshow-screen {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.home-collage-app #collage-stage {
+  flex: 1;
+  align-self: stretch;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.home-collage-app .collage-layer {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  will-change: left, top, width, height;
+  opacity: 0;
+  overflow: hidden;
+  /* !important: site uses prefers-reduced-motion { transition: none !important } on * */
+  transition: opacity 0.75s ease-out !important;
+}
+
+.home-collage-app .collage-layer.collage-layer--visible {
+  opacity: 1;
+}
+
+.home-collage-app .collage-layer img,
+.home-collage-app .collage-layer video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+/* Profile hero (before collage tiles) */
+.home-collage-app .collage-profile-hero {
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: transparent;
+  opacity: 0;
+  transition: opacity var(--profile-fade-in, 900ms) ease-out;
+}
+
+.home-collage-app .collage-profile-hero--visible {
+  opacity: 1;
+}
+
+.home-collage-app .collage-profile-hero--exit {
+  opacity: 0;
+  transition: opacity var(--profile-fade-out, 550ms) ease-in;
+}
+
+.home-collage-app .collage-profile-hero img {
+  width: min(72vmin, 420px);
+  height: min(72vmin, 420px);
+  max-width: 92%;
+  max-height: 92%;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 3px rgba(224, 111, 234, 0.45),
+    0 12px 48px rgba(0, 0, 0, 0.55);
+  transform: scale(0.92);
+  transition: transform var(--profile-fade-in, 900ms) ease-out;
+}
+
+.home-collage-app .collage-profile-hero--visible img {
+  transform: scale(1);
+}
