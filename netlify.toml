@@ -1,0 +1,9 @@
+# Personal site static files live in /website (index.html, page4.html, js/, …)
+# Netlify: Site settings → Build & deploy → Branch deploys → enable for `develop` (or “All branches”)
+
+[build]
+  publish = "website"
+
+# Optional: pin Node if you add a build step later
+# [build.environment]
+#   NODE_VERSION = "20"
