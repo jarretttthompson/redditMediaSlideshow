@@ -2,6 +2,11 @@
 
 A web app that takes a Reddit profile URL (or username) and creates a full-screen media slideshow of all images and videos that user has posted.
 
+## Branch Guide
+
+- `main`: Latest collage-based version with animated layered tiles, random timing range, and periodic source refresh for new posts.
+- `v1-simple-slideshow`: Original single-window slideshow version with classic previous/next/play controls.
+
 ## Setup
 
 ```bash
