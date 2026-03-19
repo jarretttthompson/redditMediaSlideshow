@@ -1,0 +1,674 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0a0a0f;
+  --bg-surface: #13131a;
+  --bg-elevated: #1c1c26;
+  --text: #e8e8ed;
+  --text-muted: #8888a0;
+  --accent: #ff6b35;
+  --accent-glow: rgba(255, 107, 53, 0.25);
+  --border: rgba(255, 255, 255, 0.06);
+  --radius: 12px;
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+#app {
+  height: 100%;
+  position: relative;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ─── Search Screen ─── */
+.search-container {
+  text-align: center;
+  max-width: 520px;
+  width: 100%;
+  padding: 0 24px;
+}
+
+.logo {
+  margin-bottom: 40px;
+}
+
+.logo svg {
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+.logo h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 8px;
+}
+
+.logo .subtitle {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.input-group {
+  display: flex;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.input-group:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+#reddit-input {
+  flex: 1;
+  padding: 16px 20px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+#reddit-input::placeholder {
+  color: var(--text-muted);
+}
+
+#search-btn {
+  padding: 16px 20px;
+  background: var(--accent);
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background var(--transition);
+}
+
+#search-btn:hover {
+  background: #e55a28;
+}
+
+.error {
+  color: #ff4d4d;
+  font-size: 0.875rem;
+  margin-top: 12px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ─── Loading ─── */
+.loader-container {
+  text-align: center;
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--bg-elevated);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+#loading-text {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* ─── Slideshow Screen ─── */
+#slideshow-screen {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.slideshow-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  width: 100%;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#header-username {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.counter {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.size-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.size-control svg {
+  flex-shrink: 0;
+}
+
+.size-control input[type="range"] {
+  width: 80px;
+  accent-color: var(--accent);
+}
+
+#size-display {
+  min-width: 30px;
+  text-align: center;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: background var(--transition);
+  text-decoration: none;
+}
+
+.icon-btn:hover {
+  background: var(--bg-elevated);
+}
+
+/* ─── Collage ─── */
+#collage-stage {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.collage-layer {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* must be auto so elementsFromPoint sees tiles (used to prune fully covered layers) */
+  pointer-events: auto;
+  will-change: left, top, width, height;
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity 0.75s ease-out;
+}
+
+.collage-layer.collage-layer--visible {
+  opacity: 1;
+}
+
+.collage-layer img,
+.collage-layer video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* no cropping */
+  border-radius: 6px;
+}
+
+.collage-layer .video-el {
+  background: transparent;
+}
+
+/* ─── Global Controls ─── */
+.global-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 10px 20px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-elevated);
+  color: var(--text);
+  cursor: pointer;
+  transition: background var(--transition), transform 0.15s ease;
+}
+
+.control-btn:hover {
+  background: var(--accent);
+}
+
+.control-btn:active {
+  transform: scale(0.93);
+}
+
+.control-btn.play {
+  width: 56px;
+  height: 56px;
+  background: var(--accent);
+}
+
+.control-btn.play:hover {
+  background: #e55a28;
+}
+
+.global-controls .speed-control {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.global-controls .speed-control .speed-range-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.global-controls .speed-control .speed-range-col {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.global-controls .speed-control .speed-range-label {
+  min-width: 24px;
+  text-align: right;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.global-controls .speed-control input[type="range"] {
+  width: 100px;
+  accent-color: var(--accent);
+}
+
+.layers-display {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-left: 2px;
+}
+
+.global-progress {
+  flex: 1;
+  height: 3px;
+  background: var(--bg-elevated);
+  border-radius: 999px;
+  overflow: hidden;
+  max-width: 240px;
+}
+
+#global-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.3s linear;
+}
+
+/* ─── 3-Panel Layout ─── */
+.panels-container {
+  flex: 1;
+  display: flex;
+  gap: 2px;
+  overflow: hidden;
+  background: var(--border);
+}
+
+.panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  min-width: 0;
+}
+
+.panel-stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+
+.panel-stage .media-container {
+  max-width: var(--media-scale, 85%);
+  max-height: var(--media-scale, 85%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+.panel-stage .media-container img,
+.panel-stage .media-container video {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.panel-title {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  color: var(--text);
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  max-width: 90%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.panel-title.visible {
+  opacity: 1;
+}
+
+.panel-counter {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--text-muted);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  pointer-events: none;
+}
+
+.panel-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.panel-stage:hover .panel-link {
+  opacity: 1;
+}
+
+.panel-link:hover {
+  color: var(--text);
+}
+
+/* Panel Controls */
+.panel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.panel-controls .ctrl-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-elevated);
+  color: var(--text);
+  cursor: pointer;
+  transition: background var(--transition), transform 0.15s ease;
+}
+
+.panel-controls .ctrl-btn:hover {
+  background: var(--accent);
+}
+
+.panel-controls .ctrl-btn:active {
+  transform: scale(0.93);
+}
+
+.panel-controls .ctrl-btn.play-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--accent);
+}
+
+.panel-controls .ctrl-btn.play-btn:hover {
+  background: #e55a28;
+}
+
+.panel-controls .speed-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 6px;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+.panel-controls .speed-control input[type="range"] {
+  width: 50px;
+  accent-color: var(--accent);
+}
+
+.panel-controls .speed-display {
+  min-width: 20px;
+  text-align: center;
+  font-size: 0.7rem;
+}
+
+/* Panel Progress Bar */
+.panel-progress {
+  width: 100%;
+  height: 2px;
+  background: var(--bg-surface);
+  flex-shrink: 0;
+}
+
+.panel-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.3s linear;
+}
+
+/* ─── Grid Overlay ─── */
+#grid-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 100;
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease;
+}
+
+.grid-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  position: sticky;
+  top: 0;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  z-index: 5;
+}
+
+.grid-header h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+#grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+  padding: 16px;
+}
+
+.grid-thumb {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  background: var(--bg-surface);
+}
+
+.grid-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+.grid-thumb:hover img {
+  transform: scale(1.05);
+}
+
+.grid-thumb .video-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+  .panels-container {
+    flex-direction: column;
+  }
+
+  .panel-stage .media-container img,
+  .panel-stage .media-container video {
+    max-height: 30vh;
+  }
+}
+
+@media (max-width: 600px) {
+  .logo h1 {
+    font-size: 1.6rem;
+  }
+
+  #reddit-input {
+    padding: 14px 16px;
+    font-size: 0.9rem;
+  }
+
+  .panel-controls {
+    gap: 4px;
+    padding: 6px 8px;
+  }
+
+  .panel-controls .ctrl-btn {
+    width: 30px;
+    height: 30px;
+  }
+
+  .panel-controls .ctrl-btn.play-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .panel-controls .speed-control input[type="range"] {
+    width: 40px;
+  }
+
+  #grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}

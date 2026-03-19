@@ -1,0 +1,13 @@
+{
+  "name": "reddit-slideshow",
+  "version": "1.0.0",
+  "description": "A website that creates a media slideshow from any Reddit user profile",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
